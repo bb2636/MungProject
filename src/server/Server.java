@@ -1,11 +1,15 @@
 package server;
 
+import client.Owner;
+import admin.Admin;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -40,12 +44,26 @@ public class Server {
   //02.방 리스트 제공
   public synchronized void listRooms(PrintWriter out){
     for (Room room : rooms){ // 방 리스트에 저장된 Room 객체들을 하나씩 가져와 room 변수에 저장하고 반복 실행.
-      out.println("방 이름 : " + room.getName());
+      out.println("방 이름 : " + room.getName()); // 각 방 이름들 출력
     }
   }
-
-
   //03.클라이언트 접속 처리
+  public synchronized void joinRoom(OwnerHandler owner, String roomName){
+    for (Room room : rooms){
+      if (room.getName().equals(roomName)){ // 방 이름이 요청된 roomName 과 일치하는지 확인.
+        room.addOwner(owner);
+        return; // 이미 존재하는 방이면 오너를 추가하고 메서드 종료.
+      }
+    }
+    Map<String, String> ownerinfo = new HashMap<>();
+    ownerinfo.put("A", "소형");
+    ownerinfo.put("B", "중형");
+    ownerinfo.put("C", "대형");
+    Room newRoom =
+        new Room(roomName, rooms.size() + 1, new Admin("Trainer", "대형견"));
+    newRoom.addOwner(owner);
+    rooms.add(newRoom);
+  }
 
   //04.채팅 가능
 
