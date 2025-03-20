@@ -1,6 +1,7 @@
 package server;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -37,6 +38,12 @@ public class Server {
     }
   }
   //02.방 리스트 제공
+  public synchronized void listRooms(PrintWriter out){
+    for (Room room : rooms){ // 방 리스트에 저장된 Room 객체들을 하나씩 가져와 room 변수에 저장하고 반복 실행.
+      out.println("방 이름 : " + room.getName());
+    }
+  }
+
 
   //03.클라이언트 접속 처리
 
