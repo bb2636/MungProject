@@ -1,3 +1,4 @@
+import admin.AdminView;
 import client.Dog;
 import client.Owner;
 import client.OwnerView;
@@ -26,7 +27,8 @@ public class Main {
           ownerView.startOwnerMode();
           break;
         case 2:
-          System.out.println("🚧 관리자 모드는 아직 구현되지 않았습니다.");
+          AdminView adminView = new AdminView(scanner);
+          adminView.startAdminView();
           break;
         case 3:
           System.out.println("🐾 멍훈련소 시스템을 종료합니다.");
