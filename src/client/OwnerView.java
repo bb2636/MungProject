@@ -46,6 +46,9 @@ public class OwnerView {
     System.out.print("보호자 이름 입력: ");
     ownerName = scanner.nextLine();
 
+    System.out.print("강아지 이름 입력: ");
+    String dogName = scanner.nextLine();
+
     System.out.print("견종 크기 입력: ");
     String breed = scanner.nextLine();
 
@@ -60,8 +63,10 @@ public class OwnerView {
       }
     }
 
-    Owner owner = new Owner(ownerName, age, breed);
+    Owner owner = new Owner(ownerName, age, breed,dogName);
     ownerMap.put(ownerName, owner);
+
+    out.println("/register " + ownerName + " " + age + " " + breed + " " + dogName);
 
     System.out.println("\n=== 보호자 모드 ===");
     while (true) {
@@ -128,9 +133,8 @@ public class OwnerView {
     out.println("/joinRoom " + roomId + " " + ownerName);
     System.out.println("🏠 보호자 " + ownerName + "님이 방 ID " + roomId + "에 입장하였습니다.");
     inRoom = true;
-
+    System.out.println("훈련 명령어 입력 (/exit)");
     while (inRoom) {
-      System.out.print("훈련 명령어 입력 (/exit): ");
       String command = scanner.nextLine();
       if (command.equals("/exit")) {
         System.out.println("🏠 방을 나갑니다.");

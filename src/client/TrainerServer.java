@@ -109,8 +109,9 @@ public class TrainerServer {
             clientName = parts[1];
             int age = Integer.parseInt(parts[2]);
             String breed = parts[3];
+            String dogName = parts[4];
 
-            ownerMap.put(clientName, new Owner(clientName, age, breed));
+            ownerMap.put(clientName, new Owner(clientName, age, breed,dogName));
             System.out.println("✅ 보호자 등록: " + clientName);
           } else if (input.equals("/listRooms")) {
             sendRoomList();
@@ -183,7 +184,7 @@ public class TrainerServer {
     private String getClientInfo() {
       Owner owner = ownerMap.get(clientName);
       if (owner != null) {
-        return owner.getName() + " (" + owner.getBreed() + ", " + owner.getAge() + "세)";
+        return owner.getName();
       }
       return clientName;
     }
