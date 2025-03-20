@@ -1,6 +1,7 @@
 package admin;
 
 import java.util.HashMap;
+import java.util.InputMismatchException;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -26,8 +27,19 @@ public void startAdminView() {
   while(true) {
     System.out.println(adminView);
     System.out.print("✏️ 선택: ");
-    int choice = in.nextInt();
-    in.nextLine();// 버퍼 비우기
+    int choice = -1;
+    boolean validInput = false;
+    while (!validInput) {
+      try {
+        choice = in.nextInt();
+        in.nextLine(); // 버퍼 비우기
+        validInput = true;
+      } catch (InputMismatchException e) {
+        System.out.println("잘못된 입력입니다. 숫자를 입력해주세요.");
+        in.nextLine(); // 잘못된 입력을 버퍼에서 제거
+        continue; // 루프의 시작으로 돌아감
+      }
+    }
     switch (choice) {
       case 1:
         //보호자 목록 조회
@@ -58,6 +70,12 @@ public void startAdminView() {
       System.out.print("입력 : ");
       String newTrainerSpecDog = in.nextLine(); // 전문 견종 입력
 
+      // 전문 견종 예외처리
+      if (!newTrainerSpecDog.equals("소") && !newTrainerSpecDog.equals("중") && !newTrainerSpecDog.equals("대")) {
+        System.out.println("잘못된 입력입니다. 전문 견종은 '소', '중', '대' 중 하나여야 합니다. 다시 입력해주세요.");
+        continue; // 잘못된 입력일 경우 루프의 시작으로 돌아감
+      }
+
       Admin newTrainer = new Admin(newTrainerName, newTrainerSpecDog);
       adminMap.put(newTrainerName, newTrainer);
       System.out.println("훈련사 등록이 완료되었습니다.");
@@ -81,7 +99,7 @@ public void startAdminView() {
         continue; // 훈련사가 없으면 다시 입력
       }
       // 전문 견종 정보 가져오기
-      String specialtyDogBreeds = trainer.getSpecialtyDogBreeds(); // Admin 클래스에 이 메서드가 있어야 함
+      String specialtyDogBreeds = trainer.getSpecialtyDogBreeds();
 
       // TrainingProgram 객체 생성
       TrainingProgram newProgram = new TrainingProgram(newProgramName, trainerName, specialtyDogBreeds);
