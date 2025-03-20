@@ -46,6 +46,9 @@ public class OwnerView {
     System.out.print("보호자 이름 입력: ");
     ownerName = scanner.nextLine();
 
+    System.out.print("강아지 이름 입력: ");
+    String dogName = scanner.nextLine();
+
     System.out.print("견종 크기 입력: ");
     String breed = scanner.nextLine();
 
@@ -60,10 +63,10 @@ public class OwnerView {
       }
     }
 
-    Owner owner = new Owner(ownerName, age, breed);
+    Owner owner = new Owner(ownerName, age, breed,dogName);
     ownerMap.put(ownerName, owner);
 
-    out.println("/register " + ownerName + " " + age + " " + breed);
+    out.println("/register " + ownerName + " " + age + " " + breed + " " + dogName);
 
     System.out.println("\n=== 보호자 모드 ===");
     while (true) {
