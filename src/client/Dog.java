@@ -13,4 +13,11 @@ public class Dog{
   public String getInfo() {
     return "강아지 나이: " + age + ", 강아지 크기: " + breed;
   }
+
+  public int getAge() {
+    return age;
+  }
+  public String getBreed() {
+    return breed;
+  }
 }
