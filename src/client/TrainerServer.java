@@ -183,7 +183,7 @@ public class TrainerServer {
     private String getClientInfo() {
       Owner owner = ownerMap.get(clientName);
       if (owner != null) {
-        return owner.getName() + " (" + owner.getBreed() + ", " + owner.getAge() + "세)";
+        return owner.getName();
       }
       return clientName;
     }

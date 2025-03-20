@@ -63,6 +63,8 @@ public class OwnerView {
     Owner owner = new Owner(ownerName, age, breed);
     ownerMap.put(ownerName, owner);
 
+    out.println("/register " + ownerName + " " + age + " " + breed);
+
     System.out.println("\n=== 보호자 모드 ===");
     while (true) {
       System.out.println("1. 훈련사명 리스트(방 탐색)");
@@ -128,9 +130,8 @@ public class OwnerView {
     out.println("/joinRoom " + roomId + " " + ownerName);
     System.out.println("🏠 보호자 " + ownerName + "님이 방 ID " + roomId + "에 입장하였습니다.");
     inRoom = true;
-
+    System.out.println("훈련 명령어 입력 (/exit)");
     while (inRoom) {
-      System.out.print("훈련 명령어 입력 (/exit): ");
       String command = scanner.nextLine();
       if (command.equals("/exit")) {
         System.out.println("🏠 방을 나갑니다.");

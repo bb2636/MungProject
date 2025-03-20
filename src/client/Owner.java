@@ -41,6 +41,6 @@ public class Owner {
 
   @Override
   public String toString() {
-    return "👤 보호자 " + name + " (" + getBreed() + ", " + getAge() + "세)";
+    return "👤 보호자 " + name + " (크기: " + getBreed() + ", " + getAge() + "세)";
   }
 }
