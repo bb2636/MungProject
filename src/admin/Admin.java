@@ -14,7 +14,7 @@ public class Admin {
 
   @Override
   public String toString() {
-    return "New Trainer [" +
+    return "[" +
         "훈련사명 : " + trainerName +
         ", 전문견종 : '" + specialtyDogBreeds +
         ']';
