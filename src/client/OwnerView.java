@@ -99,6 +99,9 @@ public class OwnerView {
       }
     }
   }
+  public Map<String, Owner> getOwnerMap() {
+    return new HashMap<>(ownerMap); // ownerMap의 복사본을 반환
+  }
 
   private void displayOwnerInfo() {
     Owner owner = ownerMap.get(ownerName);
