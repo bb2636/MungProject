@@ -20,16 +20,20 @@ public class AdminView {
       System.out.println(adminView);
       System.out.print("✏️ 선택: ");
       int choice = in.nextInt();
+      in.nextLine();// 버퍼 비우기
       switch (choice) {
         case 1:
           //보호자 목록 조회
         case 2:
-          //Admin a1 = new newTriner(trainerName, specialtyDogBreeds);
           System.out.println("새로 등록될 훈련사의 이름을 입력하세요");
-          String newTrainerName = in.nextLine();
+          System.out.print("입력 : ");
+          String newTrainerName = in.nextLine(); // 훈련사 이름 입력
+
           System.out.println("훈련사의 전문 견종을 입력하세요(소/중/대)");
-          String newTrainerSpecDog = in.nextLine();
-          Admin newTrainer = new Admin(newTrainerName,newTrainerSpecDog);
+          System.out.print("입력 : ");
+          String newTrainerSpecDog = in.nextLine(); // 전문 견종 입력
+
+          Admin newTrainer = new Admin(newTrainerName, newTrainerSpecDog);
           adminMap.put(newTrainerName, newTrainer);
           System.out.println("훈련사 등록이 완료되었습니다.");
           System.out.println(newTrainer);
