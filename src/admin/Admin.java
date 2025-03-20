@@ -8,6 +8,9 @@ public class Admin {
     this.trainerName = trainerName;
     this.specialtyDogBreeds = specialtyDogBreeds;
   }
+  public String getSpecialtyDogBreeds() {
+    return specialtyDogBreeds;
+  }
 
   @Override
   public String toString() {
