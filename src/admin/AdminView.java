@@ -4,6 +4,7 @@ import client.Owner;
 import server.TrainerServer;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.*;
@@ -22,7 +23,7 @@ public class AdminView {
     trainingProgramMap = new HashMap<>();
     try {
       this.socket = new Socket("localhost", 5000);
-      this.out = new PrintWriter(socket.getOutputStream(), true);
+      this.out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
     } catch (IOException e) {
       System.out.println("❌ 서버에 연결할 수 없습니다.");
       System.exit(1);

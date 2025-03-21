@@ -2,6 +2,8 @@ package client;
 
 import server.TrainerServer;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
@@ -21,8 +23,8 @@ public class OwnerView {
     this.scanner = scanner;
     try {
       this.socket = new Socket("localhost", 5000);
-      this.out = new PrintWriter(socket.getOutputStream(), true);
-      this.in = new Scanner(socket.getInputStream());
+      this.out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
+      this.in = new Scanner(new InputStreamReader(socket.getInputStream(), "UTF-8"));
       System.out.println("✅ 서버에 연결되었습니다.");
       new Thread(this::listenForMessages).start();
     } catch (IOException e) {
