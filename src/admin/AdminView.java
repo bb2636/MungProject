@@ -1,20 +1,18 @@
 package admin;
 
 import client.Owner;
-import client.OwnerView;
-
+import server.TrainerServer;
 import java.util.*;
 
 public class AdminView {
   private Admin admin;
   private Scanner in;
   private static Map<String, Admin> adminMap;
-  private OwnerView ownerView;
+
 
   public AdminView(Scanner in) {
     this.in = in;
     this.adminMap = new HashMap<>();
-    this.ownerView = new OwnerView(in);
   }
 
 public void startAdminView() {
@@ -39,7 +37,6 @@ public void startAdminView() {
       } catch (InputMismatchException e) {
         System.out.println("잘못된 입력입니다. 숫자를 입력해주세요.");
         in.nextLine(); // 잘못된 입력을 버퍼에서 제거
-        continue; // 루프의 시작으로 돌아감
       }
     }
     switch (choice) {
@@ -51,6 +48,12 @@ public void startAdminView() {
         registerTrainer(in);
         break;
       case 3:
+        if (adminMap.isEmpty()) {
+          System.out.println("------------------");
+          System.out.println("훈련사 등록 부터 하세요");
+          System.out.println("------------------");
+          break;
+        }
         addTrainingProgram(in, adminMap);
         break;
       case 4:
@@ -61,17 +64,23 @@ public void startAdminView() {
       }
     }
   }
+
   private void viewOwnerList() {
-    Map<String, Owner> owners = ownerView.getOwnerMap(); // 보호자 목록 가져오기
+    Map<String, Owner> owners = TrainerServer.getOwnerMap();
+
     if (owners.isEmpty()) {
-      System.out.println("등록된 보호자가 없습니다.");
-    } else {
-      System.out.println("=== 보호자 목록 ===");
-      for (Owner owner : owners.values()) {
-        System.out.println(owner); // Owner 객체의 toString() 메서드 호출
-      }
+      System.out.println("❌ 등록된 보호자가 없습니다.");
+      return;
+    }
+
+    System.out.println("\n=== 보호자 목록 ===");
+    for (Owner owner : owners.values()) {
+      System.out.println(owner.getInfo());
+      System.out.println("----------------------------");
     }
   }
+
+
   private static void registerTrainer(Scanner in){//새로운 훈련사 등록
     while (true) {
 

@@ -1,5 +1,6 @@
 package client;
 
+import server.TrainerServer;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -64,6 +65,7 @@ public class OwnerView {
     }
 
     Owner owner = new Owner(ownerName, age, breed, dogName);
+    TrainerServer.getOwnerMap().put(ownerName, owner);
     ownerMap.put(ownerName, owner);
 
     // ✅ 서버에 보호자 정보 등록 요청
@@ -96,8 +98,7 @@ public class OwnerView {
           getTrainingHistory();
           break;
         case 4:
-          System.out.println("❌ 클라이언트 종료");
-          closeConnection();
+          System.out.println("뒤로 가기");
           return;
         default:
           System.out.println("잘못된 선택입니다. 다시 입력해주세요.");
@@ -160,21 +161,20 @@ public class OwnerView {
     System.out.println("📜 훈련 기록을 조회 중...");
     out.println("/getHistory");
 
-    while (true) {
-      if (in.hasNextLine()) {
+    try {
+      while (in.hasNextLine()) {
         String message = in.nextLine();
         if (message.startsWith("📜")) {
           System.out.println(message);
-        } else if (message.startsWith("❌")) {
+        } else if (message.startsWith("❌")) { // 기록이 없을 경우
           System.out.println(message);
           break;
         }
       }
+    } catch (Exception e) {
+      System.out.println("❌ 훈련 기록을 가져오는 중 오류 발생: " + e.getMessage());
     }
   }
-
-
-
 
   private void closeConnection() {
     try {
@@ -183,6 +183,10 @@ public class OwnerView {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  public void shutdown() {
+    closeConnection(); // socket 닫고 서버에 /exit 보내기
   }
 
   public static void main(String[] args) {

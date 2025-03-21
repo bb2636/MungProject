@@ -1,4 +1,6 @@
-package client;
+package server;
+
+import client.Owner;
 
 import java.io.*;
 import java.net.*;
@@ -11,10 +13,6 @@ public class TrainerServer {
   private static final Map<String, Integer> nameToRoomId = new HashMap<>();
   private static final Map<String, Owner> ownerMap = new HashMap<>();
   private static int nextRoomId = 1;
-
-  public static Map<String, Owner> getOwnerMap() {
-    return ownerMap;
-  }
 
   public static void main(String[] args) {
     System.out.println("✅ 서버 시작... 포트 " + PORT);
@@ -31,6 +29,10 @@ public class TrainerServer {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  public static Map<String, Owner> getOwnerMap() {
+    return ownerMap;
   }
 
   private static synchronized int createRoom(String roomName) {
@@ -162,6 +164,10 @@ public class TrainerServer {
           default:
             message = "❌ 잘못된 훈련 명령어입니다.";
         }
+
+        // 🔥 훈련 기록을 Owner에도 저장
+        owner.addTrainingRecord(command, message);
+
         owner.getDog().train(message);
         out.println(message);
       } else {
@@ -169,21 +175,24 @@ public class TrainerServer {
       }
     }
 
+    // ✅ 클라이언트가 훈련 기록 조회 요청 시 실행되는 함수
     private void getTrainingHistory() {
       Owner owner = ownerMap.get(clientName);
       if (owner != null) {
-        String history = owner.getDog().getTrainingHistoryString(); // 🔥 String 반환
+        String history = owner.getTrainingHistoryString(); // 🔥 Owner에서 훈련 기록 가져오기
         if (history.equals("❌ 아직 훈련 기록이 없습니다.")) {
           out.println("📜 훈련 기록이 없습니다.");
         } else {
-          out.println("📜 " + owner.getDog().getName() + "의 훈련 기록:\n" + history);
+          out.println("📜 " + owner.getDog().getName() + "의 훈련 기록:");
+          for (String record : owner.getDog().getTrainingHistory()) {
+            out.println(record);
+          }
         }
+        out.println("/endHistory"); // 🔥 클라이언트가 종료 신호를 받을 수 있도록 추가
       } else {
         out.println("❌ 보호자를 찾을 수 없습니다.");
       }
     }
-
-
 
     private void joinRoom(int roomId) {
       ChatRoom room = getRoomById(roomId);
@@ -216,6 +225,8 @@ public class TrainerServer {
       Owner owner = ownerMap.get(clientName);
       return (owner != null) ? owner.getName() : clientName;
     }
+
+
 
     public void sendMessage(String message) {
       out.println(message);

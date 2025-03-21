@@ -1,16 +1,10 @@
 import admin.AdminView;
-import client.Dog;
-import client.Owner;
 import client.OwnerView;
-import server.Server;
-
-import java.util.List;
 import java.util.Scanner;
 
 public class Main {
   public static void main(String[] args) {
     Scanner scanner = new Scanner(System.in);
-
     while (true) {
       System.out.println("\n=== 멍훈련소 시스템 ===");
       System.out.println("1. 보호자로 로그인");
@@ -20,11 +14,11 @@ public class Main {
 
       int choice = scanner.nextInt();
       scanner.nextLine(); // 개행 문자 처리
-
+      OwnerView ownerView = new OwnerView(scanner);
       switch (choice) {
         case 1:
-          OwnerView ownerView = new OwnerView(scanner);
           ownerView.startOwnerMode();
+
           break;
         case 2:
           AdminView adminView = new AdminView(scanner);
@@ -32,6 +26,7 @@ public class Main {
           break;
         case 3:
           System.out.println("🐾 멍훈련소 시스템을 종료합니다.");
+          ownerView.shutdown(); // 🔥 종료 직전에만 서버 연결 종료!
           scanner.close();
           System.exit(0);
         default:
