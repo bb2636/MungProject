@@ -14,10 +14,12 @@ public class AdminView {
   private static Map<String, Admin> adminMap;
   private Socket socket;
   private static PrintWriter out;
+  private static Map<String, TrainingProgram> trainingProgramMap;
 
   public AdminView(Scanner in) {
     this.in = in;
-    this.adminMap = new HashMap<>();
+    adminMap = new HashMap<>();
+    trainingProgramMap = new HashMap<>();
     try {
       this.socket = new Socket("localhost", 5000);
       this.out = new PrintWriter(socket.getOutputStream(), true);
@@ -35,7 +37,8 @@ public void startAdminView() {
           1.보호자 목록 조회
           2.훈련사 등록
           3.훈련 프로그램 추가
-          4.나가기
+          4.훈련 프로그램 삭제
+          5.나가기
           """;
   while(true) {
     System.out.println(adminView);
@@ -70,11 +73,30 @@ public void startAdminView() {
         addTrainingProgram(in, adminMap);
         break;
       case 4:
+        removeTrainingProgram(in);
+        break;
+      case 5:
         System.out.println("나가기");
         return;
       default:
         System.out.println("잘못된 선택입니다. 다시 입력해주세요");
       }
+    }
+  }
+
+  private void removeTrainingProgram(Scanner in) {
+    while (true) {
+      System.out.print("삭제할 프로그램의 이름을 입력하세요 : ");
+      String programName = in.nextLine();
+
+      if (!trainingProgramMap.containsKey(programName)) {
+        System.out.println("❌ 해당 이름의 프로그램이 존재하지 않습니다.");
+        continue;
+      }
+      trainingProgramMap.remove(programName);
+      out.println("/removeAdmin " + programName); // 서버에 삭제 요청 전송
+      System.out.println("프로그램이 삭제되었습니다: " + programName);
+      break;
     }
   }
 
@@ -120,7 +142,6 @@ public void startAdminView() {
     }
   }
   public static void addTrainingProgram(Scanner in, Map<String, Admin> adminMap){
-    Map<String, TrainingProgram> trainingProgramMap = new HashMap<>();
     while (true) {
       System.out.println("새로 등록될 프로그램 이름을 입력하세요");
       System.out.print("입력 : ");
