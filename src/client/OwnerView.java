@@ -63,16 +63,18 @@ public class OwnerView {
       }
     }
 
-    Owner owner = new Owner(ownerName, age, breed,dogName);
+    Owner owner = new Owner(ownerName, age, breed, dogName);
     ownerMap.put(ownerName, owner);
 
+    // ✅ 서버에 보호자 정보 등록 요청
     out.println("/register " + ownerName + " " + age + " " + breed + " " + dogName);
 
     System.out.println("\n=== 보호자 모드 ===");
     while (true) {
       System.out.println("1. 훈련사명 리스트(방 탐색)");
       System.out.println("2. 내정보 확인");
-      System.out.println("3. 종료");
+      System.out.println("3. 훈련 기록 조회");
+      System.out.println("4. 종료");
       System.out.print("✏️ 선택: ");
 
       int choice;
@@ -91,6 +93,9 @@ public class OwnerView {
           displayOwnerInfo();
           break;
         case 3:
+          getTrainingHistory();
+          break;
+        case 4:
           System.out.println("❌ 클라이언트 종료");
           closeConnection();
           return;
@@ -98,6 +103,9 @@ public class OwnerView {
           System.out.println("잘못된 선택입니다. 다시 입력해주세요.");
       }
     }
+  }
+  public Map<String, Owner> getOwnerMap() {
+    return new HashMap<>(ownerMap); // ownerMap의 복사본을 반환
   }
 
   private void displayOwnerInfo() {
@@ -129,11 +137,12 @@ public class OwnerView {
     enterTrainingRoom(roomId);
   }
 
+  // ✅ 특정 방 입장 후 채팅 및 훈련 명령어
   private void enterTrainingRoom(int roomId) {
-    out.println("/joinRoom " + roomId + " " + ownerName);
+    out.println("/joinRoom " + roomId);
     System.out.println("🏠 보호자 " + ownerName + "님이 방 ID " + roomId + "에 입장하였습니다.");
     inRoom = true;
-    System.out.println("훈련 명령어 입력 (/exit)");
+    System.out.print("훈련 명령어 입력 (/sit, /stay, /fetch, /exit): ");
     while (inRoom) {
       String command = scanner.nextLine();
       if (command.equals("/exit")) {
@@ -145,6 +154,27 @@ public class OwnerView {
       out.println(command);
     }
   }
+
+  // ✅ 훈련 기록 조회
+  private void getTrainingHistory() {
+    System.out.println("📜 훈련 기록을 조회 중...");
+    out.println("/getHistory");
+
+    while (true) {
+      if (in.hasNextLine()) {
+        String message = in.nextLine();
+        if (message.startsWith("📜")) {
+          System.out.println(message);
+        } else if (message.startsWith("❌")) {
+          System.out.println(message);
+          break;
+        }
+      }
+    }
+  }
+
+
+
 
   private void closeConnection() {
     try {

@@ -1,18 +1,20 @@
 package admin;
 
-import java.util.HashMap;
-import java.util.InputMismatchException;
-import java.util.Map;
-import java.util.Scanner;
+import client.Owner;
+import client.OwnerView;
+
+import java.util.*;
 
 public class AdminView {
   private Admin admin;
   private Scanner in;
   private static Map<String, Admin> adminMap;
+  private OwnerView ownerView;
 
   public AdminView(Scanner in) {
     this.in = in;
     this.adminMap = new HashMap<>();
+    this.ownerView = new OwnerView(in);
   }
 
 public void startAdminView() {
@@ -43,7 +45,7 @@ public void startAdminView() {
     switch (choice) {
       case 1:
         //보호자 목록 조회
-        //owner.getInfo()
+        viewOwnerList();
         break;
       case 2:
         registerTrainer(in);
@@ -56,6 +58,17 @@ public void startAdminView() {
         return;
       default:
         System.out.println("잘못된 선택입니다. 다시 입력해주세요");
+      }
+    }
+  }
+  private void viewOwnerList() {
+    Map<String, Owner> owners = ownerView.getOwnerMap(); // 보호자 목록 가져오기
+    if (owners.isEmpty()) {
+      System.out.println("등록된 보호자가 없습니다.");
+    } else {
+      System.out.println("=== 보호자 목록 ===");
+      for (Owner owner : owners.values()) {
+        System.out.println(owner); // Owner 객체의 toString() 메서드 호출
       }
     }
   }
