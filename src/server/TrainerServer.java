@@ -125,6 +125,20 @@ public class TrainerServer {
             // 🧠 프로그램 이름으로 방 생성
             int newRoomId = createRoom(programName);
             System.out.println("📢 '" + programName + "' 방 생성 완료! (ID: " + newRoomId + ")");
+          }else if (input.startsWith("/removeAdmin ")) {
+            String[] parts = input.split(" ", 2); // 🔥 split은 2개만
+            if (parts.length == 2) {
+              String programName = parts[1];
+              if (adminMap.containsKey(programName)) {
+                adminMap.remove(programName);
+                roomMap.values().removeIf(room -> room.getName().equals(programName));
+                out.println("✅ 프로그램이 삭제되었습니다: " + programName);
+              } else {
+                out.println("❌ 해당 프로그램이 존재하지 않습니다.");
+              }
+            } else {
+              out.println("❌ 삭제할 프로그램 이름을 입력해주세요.");
+            }
           }
           else if (input.equals("/listRooms")) {
             sendRoomList();

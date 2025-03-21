@@ -88,11 +88,6 @@ public void startAdminView() {
     while (true) {
       System.out.print("삭제할 프로그램의 이름을 입력하세요 : ");
       String programName = in.nextLine();
-
-      if (!trainingProgramMap.containsKey(programName)) {
-        System.out.println("❌ 해당 이름의 프로그램이 존재하지 않습니다.");
-        continue;
-      }
       trainingProgramMap.remove(programName);
       out.println("/removeAdmin " + programName); // 서버에 삭제 요청 전송
       System.out.println("프로그램이 삭제되었습니다: " + programName);
