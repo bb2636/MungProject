@@ -12,10 +12,13 @@ public class TrainerServer {
   private static final Map<String, Owner> ownerMap = new HashMap<>();
   private static int nextRoomId = 1;
 
+  public static Map<String, Owner> getOwnerMap() {
+    return ownerMap;
+  }
+
   public static void main(String[] args) {
     System.out.println("✅ 서버 시작... 포트 " + PORT);
 
-    // ✅ 기본 방 생성
     int defaultRoomId = createRoom(DEFAULT_ROOM_NAME);
     System.out.println("🏠 기본 방 생성 완료! (ID: " + defaultRoomId + ", 이름: " + DEFAULT_ROOM_NAME + ")");
 
@@ -30,7 +33,6 @@ public class TrainerServer {
     }
   }
 
-  // ✅ 방 생성 (nameToRoomId에도 저장)
   private static synchronized int createRoom(String roomName) {
     if (nameToRoomId.containsKey(roomName)) {
       return nameToRoomId.get(roomName);
@@ -39,7 +41,6 @@ public class TrainerServer {
     ChatRoom room = new ChatRoom(roomId, roomName);
     roomMap.put(roomId, room);
     nameToRoomId.put(roomName, roomId);
-    System.out.println("🏠 새로운 방 생성: " + roomName + " (ID: " + roomId + ")");
     return roomId;
   }
 
@@ -76,10 +77,6 @@ public class TrainerServer {
     public String getName() {
       return name;
     }
-
-    public int getId() {
-      return id;
-    }
   }
 
   private static class ClientHandler extends Thread {
@@ -103,38 +100,39 @@ public class TrainerServer {
           String input = in.nextLine().trim();
 
           if (input.startsWith("/register ")) {
-            String[] parts = input.split(" ", 4);
-            if (parts.length < 4) continue;
+            String[] parts = input.split(" ", 5);
+            if (parts.length < 5) continue;
 
             clientName = parts[1];
             int age = Integer.parseInt(parts[2]);
             String breed = parts[3];
             String dogName = parts[4];
 
-            ownerMap.put(clientName, new Owner(clientName, age, breed,dogName));
+            ownerMap.put(clientName, new Owner(clientName, age, breed, dogName));
             System.out.println("✅ 보호자 등록: " + clientName);
-          } else if (input.equals("/listRooms")) {
+          }
+          else if (input.equals("/listRooms")) {
             sendRoomList();
-          } else if (input.startsWith("/joinRoom ")) {
-            String[] parts = input.split(" ");
-            if (parts.length < 2) {
-              out.println("❌ 올바른 방 ID를 입력하세요.");
-              continue;
-            }
-            int roomId;
-            try {
-              roomId = Integer.parseInt(parts[1]);
-              joinRoom(roomId);
-            } catch (NumberFormatException e) {
-              out.println("❌ 올바른 숫자를 입력하세요.");
-            }
-          } else if (input.equals("/leaveRoom")) {
+          }
+          else if (input.startsWith("/joinRoom ")) {
+            int roomId = Integer.parseInt(input.split(" ")[1]);
+            joinRoom(roomId);
+          }
+          else if (input.equals("/leaveRoom")) {
             leaveRoom();
-          } else if (input.equals("/exit")) {
+          }
+          else if (input.equals("/exit")) {
             leaveRoom();
             socket.close();
             return;
-          } else {
+          }
+          else if (input.equals("/getHistory")) {
+            getTrainingHistory();
+          }
+          else if (input.startsWith("/sit") || input.startsWith("/stay") || input.startsWith("/fetch")) {
+            trainDog(input);
+          }
+          else {
             if (currentRoom != null) {
               currentRoom.broadcast("💬 " + getClientInfo() + ": " + input);
             } else {
@@ -146,6 +144,46 @@ public class TrainerServer {
         e.printStackTrace();
       }
     }
+
+    private void trainDog(String command) {
+      Owner owner = ownerMap.get(clientName);
+      if (owner != null) {
+        String message;
+        switch (command) {
+          case "/sit":
+            message = "🐶 " + owner.getDog().getName() + "이(가) 앉으면서 애교를 부립니다.";
+            break;
+          case "/stay":
+            message = "🐶 " + owner.getDog().getName() + "이(가) 밥 먹기를 기다립니다.";
+            break;
+          case "/fetch":
+            message = "🐶 " + owner.getDog().getName() + "이(가) 공을 신나게 가져옵니다.";
+            break;
+          default:
+            message = "❌ 잘못된 훈련 명령어입니다.";
+        }
+        owner.getDog().train(message);
+        out.println(message);
+      } else {
+        out.println("❌ 보호자를 찾을 수 없습니다.");
+      }
+    }
+
+    private void getTrainingHistory() {
+      Owner owner = ownerMap.get(clientName);
+      if (owner != null) {
+        String history = owner.getDog().getTrainingHistoryString(); // 🔥 String 반환
+        if (history.equals("❌ 아직 훈련 기록이 없습니다.")) {
+          out.println("📜 훈련 기록이 없습니다.");
+        } else {
+          out.println("📜 " + owner.getDog().getName() + "의 훈련 기록:\n" + history);
+        }
+      } else {
+        out.println("❌ 보호자를 찾을 수 없습니다.");
+      }
+    }
+
+
 
     private void joinRoom(int roomId) {
       ChatRoom room = getRoomById(roomId);
@@ -169,24 +207,14 @@ public class TrainerServer {
       }
     }
 
-    // ✅ 방 목록 출력 기능 추가
     private void sendRoomList() {
-      if (roomMap.isEmpty()) {
-        out.println("❌ 현재 방이 없습니다.");
-        return;
-      }
       out.println("📜 현재 방 목록:");
-      roomMap.entrySet().stream()
-          .sorted(Map.Entry.comparingByKey())
-          .forEach(entry -> out.println("  [" + entry.getKey() + "] " + entry.getValue().getName()));
+      roomMap.forEach((id, room) -> out.println("  [" + id + "] " + room.getName()));
     }
 
     private String getClientInfo() {
       Owner owner = ownerMap.get(clientName);
-      if (owner != null) {
-        return owner.getName();
-      }
-      return clientName;
+      return (owner != null) ? owner.getName() : clientName;
     }
 
     public void sendMessage(String message) {
