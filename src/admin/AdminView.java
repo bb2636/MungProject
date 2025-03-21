@@ -140,6 +140,7 @@ public void startAdminView() {
       // TrainingProgram 객체 생성
       TrainingProgram newProgram = new TrainingProgram(newProgramName, trainerName, specialtyDogBreeds);
       trainingProgramMap.put(newProgramName, newProgram);
+      out.println("/saveAdmin " + newProgramName + " " + trainerName + " " + specialtyDogBreeds);
       System.out.println("프로그램 등록이 완료되었습니다");
       System.out.println(newProgram);
       break; // 프로그램 등록 후 루프 종료

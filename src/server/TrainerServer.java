@@ -1,5 +1,6 @@
 package server;
 
+import admin.TrainingProgram;
 import client.Owner;
 
 import java.io.*;
@@ -8,17 +9,14 @@ import java.util.*;
 
 public class TrainerServer {
   private static final int PORT = 5000;
-  private static final String DEFAULT_ROOM_NAME = "훈련받을 사람 여기 모여라!";
   private static final Map<Integer, ChatRoom> roomMap = new HashMap<>();
   private static final Map<String, Integer> nameToRoomId = new HashMap<>();
   private static final Map<String, Owner> ownerMap = new HashMap<>();
+  private static final Map<String, TrainingProgram> adminMap = new HashMap<>();
   private static int nextRoomId = 1;
 
   public static void main(String[] args) {
     System.out.println("✅ 서버 시작... 포트 " + PORT);
-
-    int defaultRoomId = createRoom(DEFAULT_ROOM_NAME);
-    System.out.println("🏠 기본 방 생성 완료! (ID: " + defaultRoomId + ", 이름: " + DEFAULT_ROOM_NAME + ")");
 
     try (ServerSocket serverSocket = new ServerSocket(PORT)) {
       while (true) {
@@ -87,6 +85,7 @@ public class TrainerServer {
     private Scanner in;
     private ChatRoom currentRoom;
     private String clientName;
+    private String programName;
 
     public ClientHandler(Socket socket) {
       this.socket = socket;
@@ -112,6 +111,20 @@ public class TrainerServer {
 
             ownerMap.put(clientName, new Owner(clientName, age, breed, dogName));
             System.out.println("✅ 보호자 등록: " + clientName);
+          }else if (input.startsWith("/saveAdmin ")) {
+            String[] parts = input.split(" ", 5);
+            if (parts.length < 4) continue;
+
+            programName = parts[1];
+            String trainerName = parts[2];
+            String breed = parts[3];
+
+            adminMap.put(programName, new TrainingProgram(programName, trainerName, breed));
+            System.out.println("✅ 프로그램 등록: " + programName);
+
+            // 🧠 프로그램 이름으로 방 생성
+            int newRoomId = createRoom(programName);
+            System.out.println("📢 '" + programName + "' 방 생성 완료! (ID: " + newRoomId + ")");
           }
           else if (input.equals("/listRooms")) {
             sendRoomList();
