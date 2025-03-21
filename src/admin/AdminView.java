@@ -2,18 +2,31 @@ package admin;
 
 import client.Owner;
 import server.TrainerServer;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.*;
 
 public class AdminView {
   private Admin admin;
   private Scanner in;
   private static Map<String, Admin> adminMap;
-
+  private Socket socket;
+  private static PrintWriter out;
 
   public AdminView(Scanner in) {
     this.in = in;
     this.adminMap = new HashMap<>();
+    try {
+      this.socket = new Socket("localhost", 5000);
+      this.out = new PrintWriter(socket.getOutputStream(), true);
+    } catch (IOException e) {
+      System.out.println("❌ 서버에 연결할 수 없습니다.");
+      System.exit(1);
+    }
   }
+
 
 public void startAdminView() {
   String adminView =
@@ -100,6 +113,7 @@ public void startAdminView() {
 
       Admin newTrainer = new Admin(newTrainerName, newTrainerSpecDog);
       adminMap.put(newTrainerName, newTrainer);
+      out.println("/registerTrainer " + newTrainerName + " " + newTrainerSpecDog);
       System.out.println("훈련사 등록이 완료되었습니다.");
       System.out.println(newTrainer);
       break;
