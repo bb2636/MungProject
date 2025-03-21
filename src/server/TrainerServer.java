@@ -5,6 +5,7 @@ import client.Owner;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class TrainerServer {
@@ -94,8 +95,8 @@ public class TrainerServer {
     @Override
     public void run() {
       try {
-        in = new Scanner(socket.getInputStream());
-        out = new PrintWriter(socket.getOutputStream(), true);
+        in = new Scanner(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+        out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true);
 
         while (in.hasNextLine()) {
           String input = in.nextLine().trim();
