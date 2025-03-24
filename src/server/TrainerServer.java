@@ -7,6 +7,8 @@ import client.Owner;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class TrainerServer {
   private static final int PORT = 5000;
@@ -16,6 +18,10 @@ public class TrainerServer {
   private static final Map<String, TrainingProgram> adminMap = new HashMap<>();
   private static final Map<String, Admin> adMap = new HashMap<>();
   private static int nextRoomId = 1;
+  private static final int MAX_THREADS = 100;
+  private static final ExecutorService threadPool = Executors.newFixedThreadPool(MAX_THREADS);
+
+
 
   public static void main(String[] args) {
     System.out.println("✅ 서버 시작... 포트 " + PORT);
@@ -24,7 +30,7 @@ public class TrainerServer {
       while (true) {
         Socket clientSocket = serverSocket.accept();
         System.out.println("✅ 새 클라이언트 접속: " + clientSocket);
-        new ClientHandler(clientSocket).start();
+        threadPool.execute(new ClientHandler(clientSocket)); // 풀에서 관리
       }
     } catch (IOException e) {
       e.printStackTrace();
