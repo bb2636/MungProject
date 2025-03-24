@@ -4,7 +4,6 @@ import client.Owner;
 import server.TrainerServer;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -19,10 +18,10 @@ public class AdminView {
   private static Map<String, TrainingProgram> trainingProgramMap;
 
   public AdminView(Scanner in) {
+    this.in = in;
     adminMap = new HashMap<>();
     trainingProgramMap = new HashMap<>();
     try {
-      this.in = new Scanner(new InputStreamReader(socket.getInputStream(), "UTF-8"));
       this.socket = new Socket("localhost", 5000);
       this.out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
     } catch (IOException e) {
