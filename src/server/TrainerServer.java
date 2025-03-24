@@ -5,8 +5,11 @@ import admin.TrainingProgram;
 import client.Owner;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,6 +27,8 @@ public class TrainerServer {
   public static int nextRoomId = 1;
 
   public static void main(String[] args) {
+    System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
+    System.setErr(new PrintStream(System.err, true, StandardCharsets.UTF_8));
     System.out.println("✅ 서버 시작... 포트 " + PORT);
     try (ServerSocket serverSocket = new ServerSocket(PORT)) {
       while (true) {
