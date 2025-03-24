@@ -10,7 +10,6 @@ import java.net.Socket;
 import java.util.*;
 
 public class AdminView {
-  private Admin admin;
   private Scanner in;
   private static Map<String, Admin> adminMap;
   private Socket socket;

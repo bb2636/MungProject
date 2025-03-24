@@ -34,9 +34,7 @@ public class Owner implements Serializable {
   public String getBreed() {
     return dog.getBreed();
   }
-  public String getName2(){
-    return dog.getName();
-  }
+
   public Dog getDog() {
     return dog;
   }

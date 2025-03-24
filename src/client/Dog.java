@@ -28,7 +28,6 @@ public class Dog implements Serializable {
     return trainingHistory;
   }
 
-
   public int getAge() {
     return age;
   }
