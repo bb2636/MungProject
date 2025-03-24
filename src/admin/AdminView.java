@@ -4,6 +4,7 @@ import client.Owner;
 import server.TrainerServer;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -18,10 +19,10 @@ public class AdminView {
   private static Map<String, TrainingProgram> trainingProgramMap;
 
   public AdminView(Scanner in) {
-    this.in = in;
     adminMap = new HashMap<>();
     trainingProgramMap = new HashMap<>();
     try {
+      this.in = new Scanner(new InputStreamReader(socket.getInputStream(), "UTF-8"));
       this.socket = new Socket("localhost", 5000);
       this.out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
     } catch (IOException e) {
@@ -30,57 +31,56 @@ public class AdminView {
     }
   }
 
-
-public void startAdminView() {
-  String adminView =
-      """
-          ===관리자 모드===
-          1.보호자 목록 조회
-          2.훈련사 등록
-          3.훈련 프로그램 추가
-          4.훈련 프로그램 삭제
-          5.나가기
-          """;
-  while(true) {
-    System.out.println(adminView);
-    System.out.print("✏️ 선택: ");
-    int choice = -1;
-    boolean validInput = false;
-    while (!validInput) {
-      try {
-        choice = in.nextInt();
-        in.nextLine(); // 버퍼 비우기
-        validInput = true;
-      } catch (InputMismatchException e) {
-        System.out.println("잘못된 입력입니다. 숫자를 입력해주세요.");
-        in.nextLine(); // 잘못된 입력을 버퍼에서 제거
-      }
-    }
-    switch (choice) {
-      case 1:
-        //보호자 목록 조회
-        viewOwnerList();
-        break;
-      case 2:
-        registerTrainer(in);
-        break;
-      case 3:
-        if (adminMap.isEmpty()) {
-          System.out.println("------------------");
-          System.out.println("훈련사 등록 부터 하세요");
-          System.out.println("------------------");
-          break;
+  public void startAdminView() {
+    String adminView =
+        """
+            ===관리자 모드===
+            1.보호자 목록 조회
+            2.훈련사 등록
+            3.훈련 프로그램 추가
+            4.훈련 프로그램 삭제
+            5.나가기
+            """;
+    while(true) {
+      System.out.println(adminView);
+      System.out.print("✏️ 선택: ");
+      int choice = -1;
+      boolean validInput = false;
+      while (!validInput) {
+        try {
+          choice = in.nextInt();
+          in.nextLine(); // 버퍼 비우기
+          validInput = true;
+        } catch (InputMismatchException e) {
+          System.out.println("잘못된 입력입니다. 숫자를 입력해주세요.");
+          in.nextLine(); // 잘못된 입력을 버퍼에서 제거
         }
-        addTrainingProgram(in, adminMap);
-        break;
-      case 4:
-        removeTrainingProgram(in);
-        break;
-      case 5:
-        System.out.println("나가기");
-        return;
-      default:
-        System.out.println("잘못된 선택입니다. 다시 입력해주세요");
+      }
+      switch (choice) {
+        case 1:
+          //보호자 목록 조회
+          viewOwnerList();
+          break;
+        case 2:
+          registerTrainer(in);
+          break;
+        case 3:
+          if (adminMap.isEmpty()) {
+            System.out.println("------------------");
+            System.out.println("훈련사 등록 부터 하세요");
+            System.out.println("------------------");
+            break;
+          }
+          addTrainingProgram(in, adminMap);
+          break;
+        case 4:
+          removeTrainingProgram(in);
+          break;
+        case 5:
+          System.out.println("나가기");
+          return;
+        default:
+          System.out.println("잘못된 선택입니다. 다시 입력해주세요");
       }
     }
   }
@@ -164,7 +164,7 @@ public void startAdminView() {
     }
   }
 
-    public static void main (String[]args){
+  public static void main (String[]args){
     Scanner in = new Scanner(System.in);
     AdminView adminView = new AdminView(in);
     adminView.startAdminView();
