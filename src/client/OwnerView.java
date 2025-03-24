@@ -33,7 +33,7 @@ public class OwnerView {
     }
   }
 
-  // ✅ 서버에서 메시지를 수신하는 쓰레드
+  // 서버에서 메시지를 수신하는 쓰레드
   private void listenForMessages() {
     while (in.hasNextLine()) {
       String message = in.nextLine();
@@ -70,7 +70,7 @@ public class OwnerView {
     TrainerServer.getOwnerMap().put(ownerName, owner);
     ownerMap.put(ownerName, owner);
 
-    // ✅ 서버에 보호자 정보 등록 요청
+    // 서버에 보호자 정보 등록 요청
     out.println("/register " + ownerName + " " + age + " " + breed + " " + dogName);
 
     System.out.println("\n=== 보호자 모드 ===");
@@ -140,7 +140,7 @@ public class OwnerView {
     enterTrainingRoom(roomId);
   }
 
-  // ✅ 특정 방 입장 후 채팅 및 훈련 명령어
+  // 특정 방 입장 후 채팅 및 훈련 명령어
   private void enterTrainingRoom(int roomId) {
     out.println("/joinRoom " + roomId);
     System.out.println("🏠 보호자 " + ownerName + "님이 방 ID " + roomId + "에 입장하였습니다.");
@@ -158,7 +158,7 @@ public class OwnerView {
     }
   }
 
-  // ✅ 훈련 기록 조회
+  // 훈련 기록 조회
   private void getTrainingHistory() {
     System.out.println("📜 훈련 기록을 조회 중...");
     out.println("/getHistory");

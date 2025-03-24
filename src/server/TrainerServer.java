@@ -1,11 +1,11 @@
 package server;
 
+import admin.Admin;
 import admin.TrainingProgram;
 import client.Owner;
 
 import java.io.*;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class TrainerServer {
@@ -14,6 +14,7 @@ public class TrainerServer {
   private static final Map<String, Integer> nameToRoomId = new HashMap<>();
   private static final Map<String, Owner> ownerMap = new HashMap<>();
   private static final Map<String, TrainingProgram> adminMap = new HashMap<>();
+  private static final Map<String, Admin> adMap = new HashMap<>();
   private static int nextRoomId = 1;
 
   public static void main(String[] args) {
@@ -32,6 +33,9 @@ public class TrainerServer {
 
   public static Map<String, Owner> getOwnerMap() {
     return ownerMap;
+  }
+  public static Map<String, Admin> getAdminMap() {
+    return adMap;
   }
 
   private static synchronized int createRoom(String roomName) {
@@ -95,8 +99,8 @@ public class TrainerServer {
     @Override
     public void run() {
       try {
-        in = new Scanner(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-        out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true);
+        in = new Scanner(socket.getInputStream());
+        out = new PrintWriter(socket.getOutputStream(), true);
 
         while (in.hasNextLine()) {
           String input = in.nextLine().trim();
@@ -123,7 +127,7 @@ public class TrainerServer {
             adminMap.put(programName, new TrainingProgram(programName, trainerName, breed));
             System.out.println("✅ 프로그램 등록: " + programName);
 
-            // 🧠 프로그램 이름으로 방 생성
+            // 프로그램 이름으로 방 생성
             int newRoomId = createRoom(programName);
             System.out.println("📢 '" + programName + "' 방 생성 완료! (ID: " + newRoomId + ")");
           }else if (input.startsWith("/removeAdmin ")) {
@@ -177,6 +181,7 @@ public class TrainerServer {
 
     private void trainDog(String command) {
       Owner owner = ownerMap.get(clientName);
+      Admin admin = adMap.get(programName);
       if (owner != null) {
         String message;
         switch (command) {
@@ -193,7 +198,7 @@ public class TrainerServer {
             message = "❌ 잘못된 훈련 명령어입니다.";
         }
 
-        // 🔥 훈련 기록을 Owner에도 저장
+        // 훈련 기록을 Owner에도 저장
         owner.addTrainingRecord(command, message);
 
         owner.getDog().train(message);
@@ -203,7 +208,7 @@ public class TrainerServer {
       }
     }
 
-    // ✅ 클라이언트가 훈련 기록 조회 요청 시 실행되는 함수
+    // 클라이언트가 훈련 기록 조회 요청 시 실행되는 함수
     private void getTrainingHistory() {
       Owner owner = ownerMap.get(clientName);
       if (owner != null) {
@@ -253,8 +258,6 @@ public class TrainerServer {
       Owner owner = ownerMap.get(clientName);
       return (owner != null) ? owner.getName() : clientName;
     }
-
-
 
     public void sendMessage(String message) {
       out.println(message);
