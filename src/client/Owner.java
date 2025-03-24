@@ -40,13 +40,13 @@ public class Owner implements Serializable {
   public Dog getDog() {
     return dog;
   }
-  // ✅ 훈련 기록 저장
+  // 훈련 기록 저장
   public void addTrainingRecord(String command, String message) {
     trainingRecords.putIfAbsent(command, new ArrayList<>());
     trainingRecords.get(command).add(message);
   }
 
-  // ✅ 훈련 기록을 문자열로 반환
+  // 훈련 기록을 문자열로 반환
   public String getTrainingHistoryString() {
     if (trainingRecords.isEmpty()) return "❌ 아직 훈련 기록이 없습니다.";
     StringBuilder sb = new StringBuilder();
