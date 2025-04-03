@@ -22,7 +22,7 @@ public class AdminView {
     adminMap = new HashMap<>();
     trainingProgramMap = new HashMap<>();
     try {
-      this.socket = new Socket("localhost", 5000);
+      this.socket = new Socket("127.0.0.1", 3306);
       this.out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
     } catch (IOException e) {
       System.out.println("❌ 서버에 연결할 수 없습니다.");
