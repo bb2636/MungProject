@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -18,11 +19,29 @@ public class OwnerView {
   private boolean inRoom = false;
   private Map<String, Owner> ownerMap = new HashMap<>();
   private String ownerName;
+  static Connection conn = makeConnection();
 
+  private static Connection makeConnection() {
+    String url = "jdbc:mysql://localhost:3306/mung?serverTimezone=Asia/Seoul";
+    Connection con = null;
+
+    try {
+      Class.forName("com.mysql.cj.jdbc.Driver");
+      System.out.println("데이터베이스 연결 중...");
+      con = DriverManager.getConnection(url, "root", "root");
+      System.out.println("데이터베이스 연결 성공");
+    } catch (ClassNotFoundException e) {
+      System.out.println("JDBC 드라이버를 찾지 못했습니다.");
+      System.out.println(e.getMessage());
+    } catch (SQLException e) {
+      System.out.println("데이터베이스 연결 실패");
+    }
+    return con;
+  }
   public OwnerView(Scanner scanner) {
     this.scanner = scanner;
     try {
-      this.socket = new Socket("localhost", 5000);
+      this.socket = new Socket("127.0.0.1", 3306);
       this.out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
       this.in = new Scanner(new InputStreamReader(socket.getInputStream(), "UTF-8"));
       System.out.println("✅ 서버에 연결되었습니다.");
@@ -70,6 +89,9 @@ public class OwnerView {
     TrainerServer.getOwnerMap().put(ownerName, owner);
     ownerMap.put(ownerName, owner);
 
+    // 데이터베이스에 보호자 정보 저장
+    saveOwnerToDatabase(owner);
+
     // 서버에 보호자 정보 등록 요청
     out.println("/register " + ownerName + " " + age + " " + breed + " " + dogName);
 
@@ -107,6 +129,48 @@ public class OwnerView {
       }
     }
   }
+
+  private void saveOwnerToDatabase(Owner owner) {
+    String ownerQuery = "INSERT INTO owner (name) VALUES (?)";
+    String dogQuery = "INSERT INTO dog (dogName, age, breed, ownerId) VALUES (?, ?, ?, ?)";
+
+    try {
+      // 1. 보호자 정보 삽입
+      try (PreparedStatement ownerPstmt = conn.prepareStatement(ownerQuery, Statement.RETURN_GENERATED_KEYS)) {
+        ownerPstmt.setString(1, owner.getName());
+
+        int ownerRowsAffected = ownerPstmt.executeUpdate();
+        if (ownerRowsAffected > 0) {
+          ResultSet rs = ownerPstmt.getGeneratedKeys();
+          if (rs.next()) {
+            int generatedId = rs.getInt(1); // 첫 번째 열의 값이 자동 생성된 ID
+            System.out.println("보호자 정보가 데이터베이스에 저장되었습니다. 생성된 ID: " + generatedId);
+
+            // 2. 개 정보 삽입
+            try (PreparedStatement dogPstmt = conn.prepareStatement(dogQuery)) {
+              dogPstmt.setString(1, owner.getDogName());
+              dogPstmt.setInt(2, owner.getAge()); // 개의 나이
+              dogPstmt.setString(3, owner.getBreed());
+              dogPstmt.setInt(4, generatedId); // 보호자의 ID
+
+              int dogRowsAffected = dogPstmt.executeUpdate();
+              if (dogRowsAffected > 0) {
+                System.out.println("개 정보가 데이터베이스에 저장되었습니다.");
+              } else {
+                System.out.println("개 정보를 저장하는 데 실패했습니다.");
+              }
+            }
+          }
+        } else {
+          System.out.println("보호자 정보를 저장하는 데 실패했습니다.");
+        }
+      }
+    } catch (SQLException e) {
+      System.out.println("데이터베이스 오류: " + e.getMessage());
+    }
+  }
+
+
   public Map<String, Owner> getOwnerMap() {
     return new HashMap<>(ownerMap); // ownerMap의 복사본을 반환
   }
